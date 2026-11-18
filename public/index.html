@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quản lý nhiệm vụ & KPI nhân sự</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1>Quản lý nhiệm vụ & KPI nhân sự</h1>
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="tasks">Nhiệm vụ &amp; KPI</button>
+      <button class="tab-btn" data-tab="admin">Quản trị nhiệm vụ</button>
+      <button class="tab-btn" data-tab="personnel">Nhân sự &amp; gán nhiệm vụ</button>
+      <button class="tab-btn" data-tab="stats">Thống kê</button>
+    </nav>
+  </header>
+
+  <main class="content">
+    <!-- Tab 1: Hiển thị -->
+    <section id="view-tasks" class="view active">
+      <div class="view-header">
+        <h2>Bảng nhiệm vụ & KPI</h2>
+        <button class="btn" id="btn-goto-admin">Quản lý nhiệm vụ &amp; KPI</button>
+      </div>
+      <div class="table-wrap">
+        <table id="tasks-table">
+          <thead>
+            <tr>
+              <th>Nhân sự</th>
+              <th>Chức danh</th>
+              <th>Nhiệm vụ</th>
+              <th>KPI</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Tab 2: Quản trị nhiệm vụ & KPI -->
+    <section id="view-admin" class="view">
+      <div class="view-header">
+        <h2>Quản trị nhiệm vụ & KPI</h2>
+        <button class="btn primary" id="btn-add-task">+ Thêm nhiệm vụ</button>
+      </div>
+      <p class="hint">Định nghĩa nhiệm vụ và chọn KPI dùng chung. Việc gán nhân sự nằm ở tab "Nhân sự & gán nhiệm vụ".</p>
+
+      <div class="admin-group">
+        <div class="admin-group-head">
+          <strong>Danh sách KPI dùng chung</strong>
+          <div class="inline-add">
+            <input type="text" id="new-kpi-name" placeholder="Tên KPI mới" />
+            <button class="btn small primary" id="btn-add-kpi">+ Thêm KPI</button>
+          </div>
+        </div>
+        <div id="kpi-list" class="pill-list"></div>
+      </div>
+
+      <div class="table-wrap">
+        <table id="admin-table">
+          <thead>
+            <tr>
+              <th>Nhiệm vụ</th>
+              <th>KPI</th>
+              <th class="col-actions">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Tab 3: Nhân sự & gán nhiệm vụ -->
+    <section id="view-personnel" class="view">
+      <div class="view-header">
+        <h2>Nhân sự & gán nhiệm vụ</h2>
+        <button class="btn primary" id="btn-add-person">+ Thêm nhân sự</button>
+      </div>
+      <div class="table-wrap">
+        <table id="personnel-table">
+          <thead>
+            <tr>
+              <th>Tên</th>
+              <th>Chức danh</th>
+              <th>Nhiệm vụ được gán</th>
+              <th class="col-actions">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Tab 4: Thống kê -->
+    <section id="view-stats" class="view">
+      <div class="view-header">
+        <h2>Thống kê</h2>
+        <button class="btn" id="btn-refresh-stats">⟳ Làm mới</button>
+      </div>
+      <div id="stats-totals" class="cards"></div>
+
+      <h3>Số nhiệm vụ mỗi nhân sự</h3>
+      <div class="table-wrap"><table id="stats-people"><thead><tr>
+        <th>Nhân sự</th><th>Chức danh</th><th>Số nhiệm vụ</th>
+      </tr></thead><tbody></tbody></table></div>
+
+      <h3>Số nhân sự mỗi nhiệm vụ</h3>
+      <div class="table-wrap"><table id="stats-tasks"><thead><tr>
+        <th>Nhiệm vụ</th><th>Số nhân sự</th><th>Số KPI</th>
+      </tr></thead><tbody></tbody></table></div>
+
+      <h3>Nhiệm vụ chưa có ai phụ trách</h3>
+      <div id="stats-unassigned" class="pill-list"></div>
+
+      <h3>Nhiệm vụ thiếu KPI</h3>
+      <div id="stats-missing-kpi" class="pill-list"></div>
+    </section>
+  </main>
+
+  <!-- Modal: nhiệm vụ & KPI -->
+  <div id="task-overlay" class="modal-overlay hidden">
+    <div class="modal">
+      <h3 id="task-title"></h3>
+      <form id="task-form">
+        <div class="form-row">
+          <label>Nhiệm vụ</label>
+          <input type="text" id="task-name" required />
+        </div>
+        <div class="form-row">
+          <label>KPI (dùng chung)</label>
+          <div id="task-kpi-list"></div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn" id="task-cancel">Huỷ</button>
+          <button type="submit" class="btn primary">Lưu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: nhân sự -->
+  <div id="person-overlay" class="modal-overlay hidden">
+    <div class="modal">
+      <h3 id="person-title"></h3>
+      <form id="person-form">
+        <div class="form-row">
+          <label>Tên</label>
+          <input type="text" id="person-name" required />
+        </div>
+        <div class="form-row">
+          <label>Chức danh</label>
+          <input type="text" id="person-title-field" />
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn" id="person-cancel">Huỷ</button>
+          <button type="submit" class="btn primary">Lưu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: gán nhiệm vụ cho nhân sự -->
+  <div id="assign-overlay" class="modal-overlay hidden">
+    <div class="modal">
+      <h3 id="assign-title"></h3>
+      <form id="assign-form">
+        <div id="assign-list"></div>
+        <div class="modal-actions">
+          <button type="button" class="btn" id="assign-cancel">Huỷ</button>
+          <button type="submit" class="btn primary">Lưu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

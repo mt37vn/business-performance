@@ -1,0 +1,12 @@
+{
+  "name": "business_performance",
+  "version": "1.0.0",
+  "description": "App quản lý vai trò vị trí nhân sự",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
